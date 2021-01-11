@@ -1,0 +1,8 @@
+title 0.6: New note in SPA
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server->browser: application/json
+
+note over browser:
+When user posts the note, browser will run js-code 
+that displays new note and writes log message to console
