@@ -17,21 +17,24 @@ const App = () => {
     new Array(anecdotes.length).fill(0)
   );
 
+  const copy = [...points]
+
+
   const handleSelected = () => {
     setSelected(Math.floor(Math.random() * (0, anecdotes.length)));
     console.log(selected);
   };
 
   const vote = () => {
-    console.log(points);
-    setPointArray()
+    copy[selected] += 1
+    setPointArray(copy)
   }
 
   return (
     <div>
       {anecdotes[selected]}
       <div>
-        has {points[selected]} votes
+        has {copy[selected]} votes
       </div>
       <div>
         <Button handler={vote} text="vote" />
