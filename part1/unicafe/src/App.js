@@ -41,37 +41,76 @@ const Statistics = (props) => {
   };
 
   const all = () => {
-    return (props.good + props.neutral + props.bad)
+    return props.good + props.neutral + props.bad;
   };
 
   if (all() === 0) {
     return <div>No feedback given</div>;
   }
 
-
-
   return (
     <div>
-      <div>
-        <StatisticLine text="good" value={props.good} />
-        <StatisticLine text="neutral" value={props.neutral} />
-        <StatisticLine text="bad" value={props.bad} />
-      </div>
-      <div>
-        <StatisticLine text="all" value={all()} />
-        <StatisticLine text="average" value={average()} />
-        <StatisticLine text="positive" value={positive() + " %"} />
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <StatisticLine text="good" />
+            </td>
+            <td>
+              <StatisticLine value={props.good} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <StatisticLine text="neutral" />
+            </td>
+            <td>
+              <StatisticLine value={props.neutral} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <StatisticLine text="bad" />
+            </td>
+            <td>
+              <StatisticLine value={props.bad} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <StatisticLine text="all" />
+            </td>
+            <td>
+              <StatisticLine value={all()} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <StatisticLine text="average" />
+            </td>
+            <td>
+              <StatisticLine value={average()} />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <StatisticLine text="positive" />
+            </td>
+            <td>
+              <StatisticLine value={positive()} />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
-  
 };
 
 const StatisticLine = (props) => {
   return (
-    <p>
+    <>
       {props.text} {props.value}
-    </p>
+    </>
   );
 };
 
