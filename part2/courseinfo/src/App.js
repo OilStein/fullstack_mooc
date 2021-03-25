@@ -1,5 +1,7 @@
 import React from "react";
 
+import Course from './components/Course'
+
 const App = () => {
   const courses = [
     {
@@ -62,6 +64,10 @@ const App = () => {
   );
 };
 
+/*
+
+For reference. Working ones in components folder
+
 const Course = (props) => {
   const { course } = props;
   console.log("Course props", course);
@@ -110,5 +116,6 @@ const Part = ({ part }) => {
     </div>
   );
 };
+*/
 
 export default App;
