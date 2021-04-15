@@ -1,10 +1,12 @@
 import React from 'react'
 
-const Phonebook = ({ person }) => {
+const Phonebook = ({ person, del }) => {
     // console.log("Name:", person);
+  
     return (
-      <li key={person.name}>
-        {person.name} {person.number}
+      <li key={person.id}>
+        {person.name} {person.number} 
+        <button type='button' onClick={del} id={person.id} name={person.name}>delete</button>
       </li>
     );
   };
