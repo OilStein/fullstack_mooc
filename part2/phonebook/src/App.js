@@ -8,27 +8,13 @@ import axios from 'axios';
 
 
 const App = () => {
-  // const [persons, setPersons] = useState([
-  //   { name: "Arto Hellas", number: "873-492847" },
-  //   { name: "Ada Lovelace", number: "39-44-5323523" },
-  //   { name: "Dan Abramov", number: "12-43-234345" },
-  //   { name: "Mary Poppendieck", number: "39-23-6423122" },
-  // ]);
+
+  // Remember to start json-server
 
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setNewSearch] = useState("");
-
-  const hook = () => {
-    console.log('effect persons hook');
-    axios.get('http://localhost:3001/persons').then(resposnse => {
-      console.log("promise fulfilled");
-      setPersons(resposnse.data)
-    })
-  }
-  
-  useEffect(hook, [])
 
   useEffect(() => personService.getAll().then(initialPersons => {
     setPersons(initialPersons)
@@ -61,6 +47,12 @@ const App = () => {
     })
 
   };
+
+
+  const deletePerson = (id) => {
+    console.log('trying to delete this person');
+  }
+  
 
   const handleNameChange = (event) => {
     // console.log(event.target.value);
