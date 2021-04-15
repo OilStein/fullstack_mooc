@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import personService from './services/persons'
 
 import axios from 'axios';
 
@@ -29,6 +30,10 @@ const App = () => {
   
   useEffect(hook, [])
 
+  useEffect(() => personService.getAll().then(initialPersons => {
+    setPersons(initialPersons)
+  }))
+
   const addNumber = (event) => {
     event.preventDefault();
     console.log("Add button clicked", event.target);
@@ -49,10 +54,12 @@ const App = () => {
 
     console.log(inList);
 
-    // I guess it is bad to use console.log to use function => warning otherwise
+    personService.create(phoneObject).then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+    })
 
-    setNewName("");
-    setNewNumber("");
   };
 
   const handleNameChange = (event) => {
