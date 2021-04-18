@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   // Remember to start json-server
@@ -12,6 +13,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setNewSearch] = useState("");
+  const [notification, setNotification] = useState(null);
+  const [errorBoolean, setErrorBoolean] = useState(false);
 
   useEffect(
     () =>
@@ -38,6 +41,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName("");
           setNewNumber("");
+          setNotification(`Added ${phoneObject.name}`);
+          setTimeout(() => {
+            setNotification(null);
+          }, 5000);
         })
       : window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
@@ -59,16 +66,18 @@ const App = () => {
       setPersons(
         persons.map((person) => (person.id !== id ? person : returnedNum))
       );
+      setNotification(`'${person.name}' number changed to '${num}'`);
+      setTimeout(() => setNotification(null), 5000);
     });
   };
 
   const deletePerson = (e) => {
     //console.log(persons);
     // const newList = persons.filter(person => e.target.value !== person.id)
-    console.log(e);
-    const person = e.target.name;
+    console.log("delete e props ", e);
+    const personName = e.target.name;
 
-    window.confirm(`Delete ${person}?`)
+    window.confirm(`Delete ${personName}?`)
       ? personService
           .deletePerson(e.target.id)
           .then(
@@ -76,13 +85,25 @@ const App = () => {
               personService.getAll().then((initialPersons) => {
                 setPersons(initialPersons);
               }),
+            setNotification(`'${personName}' deleted succesfully`),
+            setTimeout(() => {
+              setNotification(null);
+            }, 5000),
             []
           )
           .catch((error) => {
-            alert(`That person '${person}' was already deleted from server`);
-            setPersons(persons.filter((n) => n.id !== e.target.id));
+            setErrorBoolean(true);
+            setNotification(
+              `'${personName}' is already deleted from the server`
+            );
+            setTimeout(() => {
+              setNotification(null);
+              setErrorBoolean(false);
+            }, 5000);
           })
       : console.log("Cancel");
+
+    setPersons(persons.filter((n) => n.id !== e.target.id));
   };
 
   const handleNameChange = (event) => {
@@ -103,6 +124,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} error={errorBoolean} />
       <Filter search={search} handler={handleSearchChange}></Filter>
       <h2>Add a new</h2>
       <PersonForm
