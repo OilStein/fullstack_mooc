@@ -1,0 +1,19 @@
+{
+  "name": "part3",
+  "version": "1.0.0",
+  "description": "Part 3 backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no tests ganerated\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "Niko Sihvo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
