@@ -1,7 +1,22 @@
 const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors")
 const app = express();
 
 app.use(express.json());
+
+app.use(cors())
+// app.use(morgan('tiny', (req, res) => {
+//   return res.statusCode
+// }))
+
+morgan.token("post", (req, res) => {
+  return JSON.stringify(req.body);
+});
+
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :post")
+);
 
 let persons = [
   {
@@ -55,13 +70,44 @@ app.delete("/api/persons/:id", (req, res) => {
   res.status(204).end();
 });
 
-app.post("/api/persons", (req, res) => {
-    const person = req.body
-    console.log(person);
-    res.json(person)
-})
+const getRandomId = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
 
-const PORT = 3001;
+console.log(getRandomId(1, 100000));
+
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+
+  // console.log('body content',body);
+
+  if (!body.name && !body.number) {
+    return res.status(400).json({
+      error: "Name or number missing",
+    });
+  }
+
+  if (persons.find((f) => f.name === body.name)) {
+    return res.status(405).json({
+      error: "Name must be unique",
+    });
+  }
+
+  const person = {
+    id: getRandomId(1, 100000),
+    name: body.name,
+    number: body.number,
+  };
+  persons = persons.concat(person);
+
+  // console.log(person);
+
+  res.json(person);
+});
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server on ${PORT}`);
 });
