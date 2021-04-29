@@ -2,7 +2,10 @@ require('dotenv').config()
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors")
-const Person = require('./models/person')
+const Person = require('./models/person');
+const {
+  request
+} = require('express');
 const app = express();
 
 app.use(express.json());
@@ -22,8 +25,7 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :post")
 );
 
-let persons = [
-  {
+let persons = [{
     id: 1,
     name: "Arto Hellas",
     number: "040-1234456",
@@ -60,14 +62,17 @@ app.get("/api/persons", (req, res) => {
 });
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((person) => person.id === id);
+  Person.findById(req.params.id).then(person => {
+    res.json(person)
+  })
+  // const id = Number(req.params.id);
+  // const person = persons.find((person) => person.id === id);
 
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  // if (person) {
+  //   res.json(person);
+  // } else {
+  //   res.status(404).end();
+  // }
 });
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -89,28 +94,37 @@ app.post("/api/persons", (req, res) => {
 
   // console.log('body content',body);
 
-  if (!body.name && !body.number) {
+  if (body.name === undefined && body.number === undefined) {
     return res.status(400).json({
       error: "Name or number missing",
     });
   }
 
-  if (persons.find((f) => f.name === body.name)) {
-    return res.status(405).json({
-      error: "Name must be unique",
-    });
-  }
-
-  const person = {
-    id: getRandomId(1, 100000),
+  const person = new Person({
     name: body.name,
-    number: body.number,
-  };
-  persons = persons.concat(person);
+    number: body.number
+  })
 
-  // console.log(person);
+  person.save().then(savedPerson => {
+    res.json(savedPerson)
+  })
 
-  res.json(person);
+  // if (persons.find((f) => f.name === body.name)) {
+  //   return res.status(405).json({
+  //     error: "Name must be unique",
+  //   });
+  // }
+
+  // const person = {
+  //   id: getRandomId(1, 100000),
+  //   name: body.name,
+  //   number: body.number,
+  // };
+  // persons = persons.concat(person);
+
+  // // console.log(person);
+
+  // res.json(person);
 });
 
 const PORT = process.env.PORT;
