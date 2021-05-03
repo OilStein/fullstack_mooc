@@ -3,6 +3,9 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors")
 const Person = require('./models/person');
+const {
+  response
+} = require('express');
 const app = express();
 
 app.use(express.json());
@@ -22,27 +25,31 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :post")
 );
 
-let persons = [{
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-1234456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-3213213",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-2321-421",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendick",
-    number: "39-321-3213",
-  },
-];
+
+
+
+
+// let persons = [{
+//     id: 1,
+//     name: "Arto Hellas",
+//     number: "040-1234456",
+//   },
+//   {
+//     id: 2,
+//     name: "Ada Lovelace",
+//     number: "39-44-3213213",
+//   },
+//   {
+//     id: 3,
+//     name: "Dan Abramov",
+//     number: "12-2321-421",
+//   },
+//   {
+//     id: 4,
+//     name: "Mary Poppendick",
+//     number: "39-321-3213",
+//   },
+// ];
 
 app.get("/info", (req, res) => {
   const n = persons.length;
@@ -58,10 +65,10 @@ app.get("/api/persons", (req, res) => {
   })
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id).then(person => {
     res.json(person)
-  })
+  }).catch(error => next(error))
   // const id = Number(req.params.id);
   // const person = persons.find((person) => person.id === id);
 
@@ -73,9 +80,13 @@ app.get("/api/persons/:id", (req, res) => {
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  res.status(204).end();
+  Person.findByIdAndRemove(req.params.id)
+    .then(result => {
+      res.status(204).end()
+    }).catch(e => next(e))
+  // const id = Number(req.params.id);
+  // persons = persons.filter((person) => person.id !== id);
+  // res.status(204).end();
 });
 
 const getRandomId = (min, max) => {
@@ -124,7 +135,41 @@ app.post("/api/persons", (req, res) => {
   // res.json(person);
 });
 
+app.put('/api/persons/:id', (req, res, next) => {
+  const body = req.body
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person, {
+    new: true
+  }).then(updatePerson => {
+    res.json(updatePerson)
+  }).catch(e => next(e))
+})
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server on ${PORT}`);
 });
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({
+    error: 'unknown endpoint'
+  })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+  if (error.name === 'castError') {
+    return res.status(400).send({
+      error: 'malformated id'
+    })
+  }
+  next(error)
+}
+
+app.use(errorHandler)
