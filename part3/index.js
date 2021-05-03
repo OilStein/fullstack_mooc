@@ -3,9 +3,6 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors")
 const Person = require('./models/person');
-const {
-  response
-} = require('express');
 const app = express();
 
 app.use(express.json());
@@ -26,37 +23,14 @@ app.use(
 );
 
 
+app.get("/info", (req, res, next) => {
+  Person.countDocuments({}).then(c => {
+    const date = new Date();
+    res.send(
+      `<div> Phonebook has info for ${c} people </div>` + `<div>${date}</div>`
+    );
+  })
 
-
-
-// let persons = [{
-//     id: 1,
-//     name: "Arto Hellas",
-//     number: "040-1234456",
-//   },
-//   {
-//     id: 2,
-//     name: "Ada Lovelace",
-//     number: "39-44-3213213",
-//   },
-//   {
-//     id: 3,
-//     name: "Dan Abramov",
-//     number: "12-2321-421",
-//   },
-//   {
-//     id: 4,
-//     name: "Mary Poppendick",
-//     number: "39-321-3213",
-//   },
-// ];
-
-app.get("/info", (req, res) => {
-  const n = persons.length;
-  const date = new Date();
-  res.send(
-    `<div> Phonebook has info for ${n} people </div>` + `<div>${date}</div>`
-  );
 });
 
 app.get("/api/persons", (req, res) => {
@@ -69,35 +43,24 @@ app.get("/api/persons/:id", (req, res, next) => {
   Person.findById(req.params.id).then(person => {
     res.json(person)
   }).catch(error => next(error))
-  // const id = Number(req.params.id);
-  // const person = persons.find((person) => person.id === id);
-
-  // if (person) {
-  //   res.json(person);
-  // } else {
-  //   res.status(404).end();
-  // }
 });
 
 app.delete("/api/persons/:id", (req, res) => {
   Person.findByIdAndRemove(req.params.id)
-    .then(result => {
+    .then(_result => {
       res.status(204).end()
     }).catch(e => next(e))
-  // const id = Number(req.params.id);
-  // persons = persons.filter((person) => person.id !== id);
-  // res.status(204).end();
 });
 
-const getRandomId = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
+// const getRandomId = (min, max) => {
+//   min = Math.ceil(min);
+//   max = Math.floor(max);
+//   return Math.floor(Math.random() * (max - min + 1) + min);
+// };
 
-console.log(getRandomId(1, 100000));
+// console.log(getRandomId(1, 100000));
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body;
 
   // console.log('body content',body);
@@ -115,24 +78,7 @@ app.post("/api/persons", (req, res) => {
 
   person.save().then(savedPerson => {
     res.json(savedPerson)
-  })
-
-  // if (persons.find((f) => f.name === body.name)) {
-  //   return res.status(405).json({
-  //     error: "Name must be unique",
-  //   });
-  // }
-
-  // const person = {
-  //   id: getRandomId(1, 100000),
-  //   name: body.name,
-  //   number: body.number,
-  // };
-  // persons = persons.concat(person);
-
-  // // console.log(person);
-
-  // res.json(person);
+  }).catch(e => next(e))
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -153,6 +99,14 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server on ${PORT}`);
 });
+
+const noContent = (req, res) => {
+  res.status(204).send({
+    error: 'no content'
+  })
+}
+
+app.use(noContent)
 
 const unknownEndpoint = (req, res) => {
   res.status(404).send({
