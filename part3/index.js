@@ -77,7 +77,7 @@ app.post("/api/persons", (req, res, next) => {
   })
 
   person.save().then(savedPerson => {
-    res.json(savedPerson)
+    res.json(savedPerson.toJSON())
   }).catch(e => next(e))
 });
 
@@ -100,14 +100,6 @@ app.listen(PORT, () => {
   console.log(`Server on ${PORT}`);
 });
 
-const noContent = (req, res) => {
-  res.status(204).send({
-    error: 'no content'
-  })
-}
-
-app.use(noContent)
-
 const unknownEndpoint = (req, res) => {
   res.status(404).send({
     error: 'unknown endpoint'
@@ -122,7 +114,15 @@ const errorHandler = (error, req, res, next) => {
     return res.status(400).send({
       error: 'malformated id'
     })
-  }
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).json({
+      error: error.message
+    })
+  } else if (error.name === 'ValidatorError') {
+    return res.status(409).json({
+      error: error.message
+    })
+  } 
   next(error)
 }
 
