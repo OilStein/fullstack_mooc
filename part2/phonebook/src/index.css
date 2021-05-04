@@ -1,7 +1,7 @@
 .notification{
     color: green;
     background: lightgray;
-    font-size: 2em;
+    font-size: 1.5em;
     border-style: solid;
     border-radius: 1rem;
     padding: 1%;
@@ -11,7 +11,7 @@
 .error {
     color: red;
     background: lightgray;
-    font-size: 2em;
+    font-size: 1.5em;
     border-style: solid;
     border-radius: 1rem;
     padding: 1%;
