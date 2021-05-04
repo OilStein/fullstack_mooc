@@ -45,6 +45,14 @@ const App = () => {
           setTimeout(() => {
             setNotification(null);
           }, 5000);
+        }).catch(e => {
+          console.log(e.response.data);
+          setErrorBoolean(true)
+          setNotification(e.response.data.error)
+          setTimeout(() => {
+            setNotification(null)
+            setErrorBoolean(false)
+          }, 5000)
         })
       : window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
@@ -68,7 +76,7 @@ const App = () => {
       );
       setNotification(`'${person.name}' number changed to '${num}'`);
       setTimeout(() => setNotification(null), 5000);
-    });
+    }).catch(e => console.log(e.response.data));
   };
 
   const deletePerson = (e) => {
