@@ -1,86 +1,163 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+const helper = require('./test_helper')
 
 const api = supertest(app)
 
 const Blog = require('../models/blog')
 
-const initialBlogs = [
-  {
-    title: 'Test 1',
-    author: 'Niko',
-    url: '/test1',
-    likes: 2
-  },
-  {
-    title: 'Test 2',
-    author: 'Pete',
-    url: '/test2',
-    likes: 62
-  }
-]
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
-})
+describe('when initng blogs', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({})
 
-test('a blog post can be added ', async () => {
-  const newBlog = {
-    title: 'Added new post',
-    author: 'Niko',
-    url: '/newpost',
-    likes: 743
-  }
+    /*
+  Promise.all runs promises simultaneously
+  const blogObject = helper.initialBlogs.map(blog => new Blog(blog))
+  const promiseArray = blogObject.map(blog => blog.save())
+  await Promise.all(promiseArray)
+  */
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+    await Blog.insertMany(helper.initialBlogs)
+  })
 
-  const response = await api.get('/api/blogs')
+  test('a blog post can be added ', async () => {
+    const newBlog = {
+      title: 'Added new post',
+      author: 'Niko',
+      url: '/newpost',
+      likes: 743
+    }
 
-  const titles = response.body.map(r => r.title)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
-  expect(response.body).toHaveLength(initialBlogs.length + 1)
-  expect(titles).toContain('Added new post')
-})
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-})
+    const titles = blogsAtEnd.map(r => r.title)
+    expect(titles).toContain('Added new post')
+  })
 
-test('blog without title is not added', async () => {
-  const newBlog = {
-    author: 'Ville'
-  }
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(400)
+  describe('doing things to one blog', () => {
+    test('blog without title is not added', async () => {
+      const newBlog = {
+        likes: 23
+      }
 
-  const response = await api.get('/api/blogs')
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
 
-  expect(response.body).toHaveLength(initialBlogs.length)
-})
+      const blogsAtEnd = await helper.blogsInDb()
+      expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
 
-test('a specific blog', async () => {
-  const response = await api.get('/api/blogs')
-  expect(response.body).toHaveLength(initialBlogs.length)
-})
+    test('a blog can be deleted', async () => {
+      const blogAtStart = await helper.blogsInDb()
+      const blogToDelete = blogAtStart[0]
 
-test('Content of the first', async () => {
-  const response = await api.get('/api/blogs')
-  const authors = response.body.map(r => r.author)
-  expect(authors).toContain('Pete')
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd).toHaveLength(
+        helper.initialBlogs.length - 1
+      )
+
+      const titles = blogsAtEnd.map(r => r.title)
+
+      expect(titles).not.toContain(blogToDelete.title)
+    })
+
+    test('identify blog id', async () => {
+      const getBlogs = await helper.blogsInDb()
+      const blogToView = getBlogs[0]
+      const processedBlogToView = JSON.parse(JSON.stringify(blogToView))
+      console.log(processedBlogToView)
+      expect(processedBlogToView.id).toBeDefined()
+    })
+  })
+
+  test('Content of the blog can be viewed', async () => {
+    const blogAtStart = await helper.blogsInDb()
+    const blogToView = blogAtStart[0]
+
+    const resultBlog = await api
+      .get(`/api/blogs/${blogToView.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const processedBlogToView = JSON.parse(JSON.stringify(blogToView))
+    expect(resultBlog.body).toEqual(processedBlogToView)
+  })
+
+  test('likes default 0', async () => {
+    const newBlog = {
+      title: 'likes to zero',
+      url: '/likesZero'
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+    expect(blogsAtEnd.pop().likes).toBe(0)
+  })
+
+  test('title or url missing', async () => {
+    const newBlog = {
+      title: 'url missing',
+      likes: 2
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const newBlog2 = {
+      url: '/missingTitle',
+      likes: 43242
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog2)
+      .expect(400)
+  })
+
+  test('update object', async () => {
+    const blogAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogAtStart[0]
+    const update = {
+      likes: 421
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(update)
+      .expect(200)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd[0].likes).toBe(421)
+  })
 })
 
 afterAll(() => {
