@@ -60,6 +60,39 @@ describe('when there is one user at db', () => {
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   })
+
+  test('password is too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const newUser = {
+      username: 'kissakala',
+      password: 'ka'
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    expect(result.body.error).toContain('too short password')
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('username is too short', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const newUser = {
+      username: 'ki',
+      password: 'kacxzcxz'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
 })
 
 afterAll(() => {
