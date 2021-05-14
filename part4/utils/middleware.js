@@ -41,6 +41,12 @@ const tokenExtractor = (req, res, next) => {
   next()
 }
 
+const userExtractor = (req, res, next) => {
+  const userID = tokenExtractor()
+  // kesken
+  next()
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
