@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -5,32 +6,40 @@ const helper = require('./test_helper')
 
 const api = supertest(app)
 
+const User = require('../models/user')
 const Blog = require('../models/blog')
 
 describe('when initng blogs', () => {
+  let token = ''
   beforeEach(async () => {
     await Blog.deleteMany({})
-
-    /*
-  Promise.all runs promises simultaneously
-  const blogObject = helper.initialBlogs.map(blog => new Blog(blog))
-  const promiseArray = blogObject.map(blog => blog.save())
-  await Promise.all(promiseArray)
-  */
-
     await Blog.insertMany(helper.initialBlogs)
+
+    await User.deleteMany({})
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'admin', passwordHash })
+    await user.save()
+
+    const result = await api
+      .post('/api/login')
+      .send({
+        username: 'admin',
+        password: 'sekret'
+      })
+
+    token = result.body.token
   })
 
   test('a blog post can be added ', async () => {
     const newBlog = {
       title: 'Added new post',
-      author: 'Niko',
       url: '/newpost',
       likes: 743
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -57,6 +66,7 @@ describe('when initng blogs', () => {
 
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${token}`)
         .send(newBlog)
         .expect(400)
 
@@ -87,7 +97,7 @@ describe('when initng blogs', () => {
       const getBlogs = await helper.blogsInDb()
       const blogToView = getBlogs[0]
       const processedBlogToView = JSON.parse(JSON.stringify(blogToView))
-      console.log(processedBlogToView)
+      // console.log(processedBlogToView)
       expect(processedBlogToView.id).toBeDefined()
     })
   })
