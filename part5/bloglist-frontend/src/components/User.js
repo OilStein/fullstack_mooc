@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 
-const User = ({ username }) => {
+const User = ({ username, handleLogout }) => {
   return (
      <div>
-        <p>{username} logged in</p>
+        {username} logged <button onClick={handleLogout}>logout</button>
     </div>
   )
 }

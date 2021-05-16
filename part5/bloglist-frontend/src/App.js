@@ -51,6 +51,18 @@ const App = () => {
     }
   }
 
+  const handleLogout = async (event) => {
+    event.preventDefault()
+    console.log(username, 'logging out')
+
+    try {
+      window.localStorage.removeItem('loggedUser')
+      setUser(null)
+    } catch (error) {
+      setError('Cant logout :D')
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -84,7 +96,7 @@ const App = () => {
     <div>
       <h2>Blogs</h2>
      <Notification message={error}/>
-     <User key={user.id} username={user.username}></User>
+     <User key={user.id} username={user.username} handleLogout={handleLogout}></User>
       {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
     </div>
 
