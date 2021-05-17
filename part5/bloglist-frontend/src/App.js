@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import User from './components/User'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginServise from './services/login'
@@ -12,6 +13,10 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
 
   useEffect(async () => {
     const blogs = await blogService.getAll()
@@ -26,6 +31,32 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const addBlog = async (event) => {
+    event.preventDefault()
+    console.log('Add button clicked', event.target)
+
+    const blogObject = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl
+    }
+
+    try {
+      const updateBlog = await blogService.create(blogObject)
+      console.log(updateBlog)
+      setBlogs(blogs.concat(updateBlog))
+      resetForm()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const resetForm = () => {
+    setNewAuthor('')
+    setNewTitle('')
+    setNewUrl('')
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -63,6 +94,21 @@ const App = () => {
     }
   }
 
+  const handleTitleChange = (event) => {
+    // console.log(event.target.value);
+    setNewTitle(event.target.value)
+  }
+
+  const handleAuthorChange = (event) => {
+    // console.log(event.target.value);
+    setNewAuthor(event.target.value)
+  }
+
+  const handleUrlChange = (event) => {
+    // console.log(event.target.value);
+    setNewUrl(event.target.value)
+  }
+
   if (user === null) {
     return (
       <div>
@@ -95,8 +141,17 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
-     <Notification message={error}/>
-     <User key={user.id} username={user.username} handleLogout={handleLogout}></User>
+      <Notification message={error}/>
+      <User key={user.id} username={user.username} handleLogout={handleLogout}></User>
+      <BlogForm
+        addBlog={addBlog}
+        newTitle={newTitle}
+        newAuthor={newAuthor}
+        newUrl={newUrl}
+        handleTitleChange={handleTitleChange}
+        handleAuthorChange={handleAuthorChange}
+        handleUrlChange={handleUrlChange}
+      />
       {blogs.map((blog) => <Blog key={blog.id} blog={blog} />)}
     </div>
 
