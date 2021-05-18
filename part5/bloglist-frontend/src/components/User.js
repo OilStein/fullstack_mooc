@@ -1,5 +1,6 @@
-/* eslint-disable react/prop-types */
+
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const User = ({ username, handleLogout }) => {
   return (
@@ -9,4 +10,8 @@ const User = ({ username, handleLogout }) => {
   )
 }
 
+User.propTypes = {
+  username: PropTypes.string.isRequired,
+  handleLogout: PropTypes.func.isRequired
+}
 export default User
