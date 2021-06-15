@@ -12,5 +12,10 @@ module.exports = {
     ecmaVersion: 12
   },
   rules: {
+  },
+  settings: {
+    jest: {
+      version: 27
+    }
   }
 }

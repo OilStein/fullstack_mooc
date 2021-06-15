@@ -39,20 +39,20 @@ const BlogForm = ({ createBlog }) => {
   }
   // console.log(props)
   return (
-    <div>
+    <div className='formDiv'>
       <h2>create a blog</h2>
       <form onSubmit={addBlog}>
         <div>
-          title: <input value={newTitle} onChange={handleTitleChange} ></input>
+          title: <input id='title' value={newTitle} onChange={handleTitleChange} ></input>
         </div>
         <div>
-          author: <input value={newAuthor} onChange={handleAuthorChange}></input>
+          author: <input id='author' value={newAuthor} onChange={handleAuthorChange}></input>
         </div>
         <div>
-          url: <input value={newUrl} onChange={handleUrlChange}></input>
+          url: <input id='url' value={newUrl} onChange={handleUrlChange}></input>
         </div>
         <div>
-          <button type='submit'>create</button>
+          <button id='create-button' type='submit'>create</button>
         </div>
       </form>
     </div>

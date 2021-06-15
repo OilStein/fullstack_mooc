@@ -35,7 +35,9 @@ const App = () => {
   }, [])
 
   const notify = (message, type = 'notification') => {
+    console.log(message, type)
     setNotification({ message, type })
+    console.log(notification)
     setTimeout(() => {
       setNotification(null)
     }, 3000)
@@ -60,6 +62,8 @@ const App = () => {
       const loginUser = await loginServise.login({
         username, password
       })
+
+      console.log(loginUser)
 
       window.localStorage.setItem(
         'loggedUser', JSON.stringify(loginUser)

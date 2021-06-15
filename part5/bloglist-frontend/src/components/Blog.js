@@ -57,9 +57,9 @@ const Blog = ({ blog, giveLike, user, notify }) => {
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  giveLike: PropTypes.func.isRequired,
+  giveLike: PropTypes.func,
   user: PropTypes.string.isRequired,
-  notify: PropTypes.func.isRequired
+  notify: PropTypes.func
 }
 
 export default Blog
