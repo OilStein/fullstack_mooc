@@ -44,5 +44,4 @@ describe('<Togglable />', () => {
     const div = component.container.querySelector('.togglableContent')
     expect(div).toHaveStyle('display: none')
   })
-
 })

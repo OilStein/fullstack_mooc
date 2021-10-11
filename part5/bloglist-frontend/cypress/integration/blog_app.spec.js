@@ -65,6 +65,12 @@ describe('Blog', () => {
 
         cy.contains('1')
       })
+
+      it('current user can delete blog', () => {
+        cy.contains('show').click()
+        cy.contains('remove').click()
+        cy.contains('deleted')
+      })
     })
   })
 })

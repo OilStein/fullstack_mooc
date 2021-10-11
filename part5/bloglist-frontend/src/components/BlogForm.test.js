@@ -1,7 +1,7 @@
-import React from 'react';
-import moduleName, { fireEvent, render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import BlogForm from './BlogForm';
+import React from 'react'
+import { fireEvent, render } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
+import BlogForm from './BlogForm'
 
 describe('BlogForm', () => {
   test('updates state and calls onSubmit', () => {
@@ -18,13 +18,13 @@ describe('BlogForm', () => {
     const form = component.container.querySelector('form')
 
     fireEvent.change(author, {
-      target: {value: 'Niko'}
+      target: { value: 'Niko' }
     })
     fireEvent.change(title, {
-      target: {value: 'Testing if this changes'}
+      target: { value: 'Testing if this changes' }
     })
     fireEvent.change(url, {
-      target: {value: '/changes'}
+      target: { value: '/changes' }
     })
     fireEvent.submit(form)
 

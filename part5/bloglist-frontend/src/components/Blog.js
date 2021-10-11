@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react'
-import blogService from '../services/blogs'
+// import blogService from '../services/blogs'
 import PropTypes from 'prop-types'
 
-const Blog = ({ blog, giveLike, user, notify }) => {
+const Blog = ({ blog, giveLike, user, notify, deleteBlog }) => {
   const [blogVisible, setBlogVisible] = useState(false)
   const [buttonValue, setButtonValue] = useState('show')
 
@@ -23,24 +23,24 @@ const Blog = ({ blog, giveLike, user, notify }) => {
   const toggleDeleteButton = () => {
     if (user === blog.user.username) {
       return (
-        <div><button onClick={deleteBlog}>remove</button></div>
+        <div><button onClick={deleteBlog} id={blog.id}>remove</button></div>
       )
     }
   }
 
-  const deleteBlog = async () => {
-    const id = blog.id
-    console.log(id)
-    try {
-      if (window.confirm(`Deleting ${blog.title}, are you sure?`)) {
-        await blogService.remove(id)
-        notify(`Deleted ${blog.title}`)
-      }
-    } catch (error) {
-      console.log(error)
-      notify('Failed', 'error')
-    }
-  }
+  // const deleteBlog = async () => {
+  //   const id = blog.id
+  //   console.log(id)
+  //   try {
+  //     if (window.confirm(`Deleting ${blog.title}, are you sure?`)) {
+  //       await blogService.remove(id)
+  //       notify(`Deleted ${blog.title}`)
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //     notify('Failed', 'error')
+  //   }
+  // }
 
   return (
     <div className="blogStyle">
@@ -59,7 +59,8 @@ Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   giveLike: PropTypes.func,
   user: PropTypes.string.isRequired,
-  notify: PropTypes.func
+  notify: PropTypes.func,
+  deleteBlog: PropTypes.func
 }
 
 export default Blog

@@ -35,9 +35,9 @@ const App = () => {
   }, [])
 
   const notify = (message, type = 'notification') => {
-    console.log(message, type)
+    // console.log(message, type)
     setNotification({ message, type })
-    console.log(notification)
+    // console.log(notification)
     setTimeout(() => {
       setNotification(null)
     }, 3000)
@@ -50,6 +50,21 @@ const App = () => {
       console.log(blogObject)
       setBlogs(await blogService.getAll())
       notify(`${blogObject.title} created`)
+    } catch (error) {
+      notify(error, 'error')
+    }
+  }
+
+  const deleteBlog = async (item) => {
+    const id = item.target.id
+    console.log(id)
+    const blog = blogs.find(n => n.id === id)
+    console.log(blog)
+    // const title = blog.title
+    try {
+      await blogService.remove(id)
+      setBlogs(await blogService.getAll())
+      notify(`${blog.title} deleted`)
     } catch (error) {
       notify(error, 'error')
     }
@@ -92,7 +107,7 @@ const App = () => {
   const giveLike = async (item) => {
     const id = item.target.id
     const blog = blogs.find(n => n.id === id)
-    console.log(typeof blog.user.id)
+    // console.log(typeof blog.user.id)
     const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
     console.log(updatedBlog)
     try {
@@ -129,7 +144,7 @@ const App = () => {
       </div>
       <div>
         <Togglable buttonLabel='create blog' ref={BlogFormRef}>
-          <BlogForm createBlog={addBlog}/>
+          <BlogForm createBlog={addBlog} />
         </Togglable>
       </div>
       <div>
@@ -140,6 +155,7 @@ const App = () => {
           giveLike={giveLike}
           notify={notify}
           user={user.username}
+          deleteBlog={deleteBlog}
           />)}
       </div>
     </div>
