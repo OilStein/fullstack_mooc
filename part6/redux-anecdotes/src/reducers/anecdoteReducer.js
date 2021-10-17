@@ -19,11 +19,11 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   switch (action.type) {
     // Odd Bug
     case 'NEW_ANECDOTE': {
-      console.log(`Action data: ${action.data}`)
+      // console.log(`Action data: ${action.data}`)
       return [...state, action.data]
     }
     // Works
@@ -56,4 +56,4 @@ export const giveVote = (id) => {
   }
 }
 
-export default reducer
+export default anecdoteReducer
