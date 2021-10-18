@@ -1,22 +1,35 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { connect } from 'react-redux'
+import propTypes from 'prop-types'
 
-const Notification = () => {
-  const notification = useSelector(state => state.notifications)
+const Notification = (props) => {
+  const notification = props.notification
+  console.log('notification ', notification)
+  console.log(props)
   const style = {
     border: 'solid',
     padding: 10,
     borderWidth: 1
   }
-  if (notification.length === 0) {
+  if (notification === '' || notification === undefined) {
     return null
-  } else {
-    return (
+  }
+
+  return (
     <div style={style}>
       {notification}
     </div>
-    )
-  }
+  )
 }
 
-export default Notification
+const mapDispatchToProps = (state) => {
+  return { notification: state.notification }
+}
+
+Notification.propTypes = {
+  notification: propTypes.array
+}
+
+export default connect(
+  mapDispatchToProps
+)(Notification)

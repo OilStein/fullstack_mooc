@@ -1,14 +1,13 @@
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { connect } from 'react-redux'
 import { updateList } from '../reducers/filterReducer'
+import propTypes from 'prop-types'
 
-const Filter = () => {
-  const dispatch = useDispatch()
-
+const Filter = (props) => {
   const handleChange = (event) => {
     event.preventDefault()
     const input = event.target.value
-    dispatch(updateList(input))
+    props.updateList(input)
   }
 
   const style = {
@@ -22,4 +21,8 @@ const Filter = () => {
   )
 }
 
-export default Filter
+Filter.propTypes = {
+  updateList: propTypes.func
+}
+
+export default connect(null, { updateList })(Filter)
