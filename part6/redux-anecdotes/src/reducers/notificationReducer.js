@@ -1,23 +1,27 @@
-const notificationsAtStart = []
-
-const notificationReducer = (state = notificationsAtStart, action) => {
+const notificationReducer = (state = [], action) => {
   switch (action.type) {
     case 'NOTIFICATION': {
-      return [...notificationsAtStart, action.data]
+      return [...state, action.data]
     }
     case 'HIDE': {
-      return notificationsAtStart
+      return []
     }
     default:
       return state
   }
 }
 
-export const showNotification = (notification) => {
-  console.log(notification)
-  return {
-    type: 'NOTIFICATION',
-    data: notification
+export const showNotification = (notification, time) => {
+  const s = time * 1000
+  console.log('noti ', notification)
+  return async dispatch => {
+    dispatch({
+      type: 'NOTIFICATION',
+      data: notification
+    })
+    setTimeout(() => {
+      dispatch(hideNotification())
+    }, s)
   }
 }
 
