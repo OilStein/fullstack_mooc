@@ -1,35 +1,31 @@
 import blogs from '../services/blogs'
 import loginService from '../services/login'
-import storage from '../utils/storage'
 
-const loggedUser = storage.loadUser()
-
-const initialState = loggedUser || null
-
-const userReducer = (state = initialState, action) => {
+const loginReducer = (state = null, action) => {
   switch (action.type) {
     case 'LOGIN':
-      return action.data
+      return action.user
     default:
       return state
   }
 }
 
-export const sUS = (user) => {
+export const setUserState = (user) => {
   blogs.setToken(user.token)
   return {
-    data: user,
-    type: 'LOGIN'
+    type: 'LOGIN',
+    user
   }
 }
 
 export const loginUser = (user) => {
   return async dispatch => {
-    const logged = loginService.login(user)
+    const logged = await loginService.login(user)
+    console.log('logged ' + logged.token)
     window.localStorage.setItem('loggedInUser', JSON.stringify(logged))
     blogs.setToken(logged.token)
     dispatch({
-      data: logged,
+      user: logged,
       type: 'LOGIN'
     })
   }
@@ -38,9 +34,9 @@ export const loginUser = (user) => {
 export const logoutUser = () => {
   window.localStorage.removeItem('loggedInUser')
   return {
-    data: null,
+    user: null,
     type: 'SET_USER'
   }
 }
 
-export default userReducer
+export default loginReducer

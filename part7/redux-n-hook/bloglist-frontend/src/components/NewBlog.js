@@ -14,10 +14,12 @@ const NewBlog = () => {
 
   const handleNewBlog = (event) => {
     event.preventDefault()
-
-    dispatch(createBlog({ title, author, url }))
-    dispatch(createNotification(`Created a new blog ${title} by ${author}`))
-
+    try {
+      dispatch(createBlog({ title, author, url }))
+      dispatch(createNotification(`Created a new blog ${title} by ${author}`))
+    } catch (error) {
+      dispatch(createNotification('Creating a blog failed successfully', 'error'))
+    }
     setTitle('')
     setAuthor('')
     setUrl('')

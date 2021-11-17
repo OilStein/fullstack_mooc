@@ -6,14 +6,13 @@ import NewBlog from './components/NewBlog'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { createNotification } from './reducers/notificationReducer'
-import { getBlogs, removeBlog, updateBlog } from './reducers/blogReducer'
-import { logoutUser, sUS } from './reducers/userReducer'
-import { login } from './services/login'
+import { getBlogs, removeBlog, likeBlog } from './reducers/blogReducer'
+import { loginUser, logoutUser, setUserState } from './reducers/loginReducer'
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.user)
+  const user = useSelector(state => state.login)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -28,14 +27,15 @@ const App = () => {
     const logged = window.localStorage.getItem('loggedInUser')
     if (logged) {
       const pu = JSON.parse(logged)
-      dispatch(sUS(pu))
+      dispatch(setUserState(pu))
     }
   }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await dispatch(login({ username, password }))
+      dispatch(loginUser({ username, password }))
+      console.log(user)
       dispatch(createNotification(`Welcome, ${user.username}`))
 
       setUsername('')
@@ -46,22 +46,21 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('loggedInUser')
-    dispatch(logoutUser)
+    window.localStorage.removeItem('loggedInUser')
+    dispatch(logoutUser())
   }
 
-  const handleLike = async (id) => {
-    const blogToLike = blogs.find(b => b.id === id)
-    const likedBlog = {
-      ...blogToLike,
-      likes: blogToLike.likes + 1,
-      user: blogToLike.user.id
+  const handleLike = async (blog) => {
+    try {
+      dispatch(likeBlog(blog))
+      dispatch(createNotification(`${blog.title} liked`))
+    } catch (error) {
+      dispatch(createNotification('Something went wrong with liking', 'error'))
     }
-    dispatch(updateBlog(id, likedBlog))
-    dispatch(createNotification(`${blogToLike.title} liked`))
   }
 
-  const handleRemove = async (id) => {
+  const handleRemove = async (blog) => {
+    const id = blog.id
     const blogToRemove = blogs.find(b => b.id === id)
     const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
     if (ok) {
@@ -121,7 +120,7 @@ const App = () => {
           blog={blog}
           handleLike={handleLike}
           handleRemove={handleRemove}
-          own={user.username === blog.user.username}
+          user={user}
         />
       )}
     </div>
