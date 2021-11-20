@@ -1,18 +1,19 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Notification from './components/Notification'
 
 import Login from './components/Login'
 
 import { getBlogs } from './reducers/blogReducer'
-import { logoutUser, setUserState } from './reducers/loginReducer'
+import { setUserState } from './reducers/loginReducer'
 import UserList from './components/UserList'
 import BlogList from './components/BlogList'
 import UserInfo from './components/UserInfo'
 import BlogInfo from './components/Blog'
 import { getAllUsers } from './reducers/usersReducer'
+import Nav from './components/Nav'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -32,15 +33,6 @@ const App = () => {
     }
   }, [])
 
-  const handleLogout = () => {
-    window.localStorage.removeItem('loggedInUser')
-    dispatch(logoutUser())
-  }
-
-  const padding = {
-    padding: 5
-  }
-
   if (!user) {
     return <Login></Login>
   }
@@ -48,14 +40,7 @@ const App = () => {
   return (
     <div>
       <Router>
-        <div>
-          <Link style={padding} to="/">home</Link>
-          <Link style={padding} to="/users">users</Link>
-        </div>
-
-         <p>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </p>
+        <Nav/>
 
         <Notification />
 
