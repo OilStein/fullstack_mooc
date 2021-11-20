@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
-import Notification from './components/Notification'
-import Togglable from './components/Togglable'
-import NewBlog from './components/NewBlog'
-
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { createNotification } from './reducers/notificationReducer'
-import { getBlogs, removeBlog, likeBlog } from './reducers/blogReducer'
-import { loginUser, logoutUser, setUserState } from './reducers/loginReducer'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+
+import Notification from './components/Notification'
+
+import Login from './components/Login'
+
+import { getBlogs } from './reducers/blogReducer'
+import { logoutUser, setUserState } from './reducers/loginReducer'
+import UserList from './components/UserList'
+import BlogList from './components/BlogList'
+import UserInfo from './components/UserInfo'
+import BlogInfo from './components/Blog'
+import { getAllUsers } from './reducers/usersReducer'
 
 const App = () => {
   const dispatch = useDispatch()
-  const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.login)
-
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-
-  const blogFormRef = React.createRef()
 
   useEffect(() => {
     dispatch(getBlogs())
+    dispatch(getAllUsers())
   }, [])
 
   useEffect(() => {
@@ -31,98 +31,41 @@ const App = () => {
     }
   }, [dispatch])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      dispatch(loginUser({ username, password }))
-      console.log(user)
-      dispatch(createNotification(`Welcome, ${user.username}`))
-
-      setUsername('')
-      setPassword('')
-    } catch (exception) {
-      dispatch(createNotification('Wrong username or password', 'error'))
-    }
-  }
-
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInUser')
     dispatch(logoutUser())
   }
 
-  const handleLike = async (blog) => {
-    try {
-      dispatch(likeBlog(blog))
-      dispatch(createNotification(`${blog.title} liked`))
-    } catch (error) {
-      dispatch(createNotification('Something went wrong with liking', 'error'))
-    }
-  }
-
-  const handleRemove = async (blog) => {
-    const id = blog.id
-    const blogToRemove = blogs.find(b => b.id === id)
-    const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
-    if (ok) {
-      await dispatch(removeBlog(id))
-    }
+  const padding = {
+    padding: 5
   }
 
   if (!user) {
-    return (
-      <div>
-        <h2>login to application</h2>
-
-        <Notification/>
-
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              id='username'
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              id='password'
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button id='login'>login</button>
-        </form>
-      </div>
-    )
+    return <Login></Login>
   }
-
-  const byLikes = (b1, b2) => b2.likes - b1.likes
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Router>
+        <div>
+          <Link style={padding} to="/">home</Link>
+          <Link style={padding} to="/users">users</Link>
+        </div>
 
-      <Notification/>
+         <p>
+          {user.name} logged in <button onClick={handleLogout}>logout</button>
+        </p>
 
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
+        <Notification />
 
-      <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-        <NewBlog/>
-      </Togglable>
+        <Routes>
+          <Route path="/blogs/:id" element={<BlogInfo/>}></Route>
+          <Route path="/users/:id" element={<UserInfo/>}></Route>
+          <Route path="/users" element={<UserList/>}></Route>
+          <Route path="/" element={<BlogList/>}></Route>
+        </Routes>
 
-      {blogs.sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-          user={user}
-        />
-      )}
+      </Router>
     </div>
   )
 }

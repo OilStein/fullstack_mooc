@@ -32,7 +32,6 @@ export const getBlogs = () => {
 export const createBlog = (newBlog) => {
   return async dispatch => {
     const blog = await blogService.create(newBlog)
-    console.log(blog)
     dispatch({
       data: blog,
       type: 'CREATE'
@@ -43,9 +42,7 @@ export const createBlog = (newBlog) => {
 export const likeBlog = (blog) => {
   return async dispatch => {
     const update = { ...blog, likes: blog.likes + 1 }
-    console.log('update: ' + update.id)
     const data = await blogService.like(update)
-    console.log(data)
     dispatch({
       data: data,
       type: 'UPDATE'

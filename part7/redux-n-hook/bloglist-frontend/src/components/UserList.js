@@ -1,33 +1,36 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllUsers } from '../reducers/userReducer'
+import { Link } from 'react-router-dom'
+
+import { getAllUsers } from '../reducers/usersReducer'
 
 const UserList = () => {
   const dispatch = useDispatch()
-  const users = useSelector(state => state.users)
 
   useEffect(() => {
     dispatch(getAllUsers())
   }, [dispatch])
 
+  const users = useSelector(state => state.users)
   return (
     <div>
       <h2>Users</h2>
       <table>
         <thead>
           <tr>
-            <td>User</td>
-            <td>Blogs Created</td>
+            <th>User</th>
+            <th>Blogs Created</th>
           </tr>
         </thead>
-
-        {users.map(user =>
+        <tbody>
+          {users && users.map(user =>
           <tr key={user.username}>
-            <td>{user.name}</td>
+            <td><Link to={`/users/${user.id}`} id={user.id}>{user.name}</Link></td>
             <td>{user.blogs.length}</td>
           </tr>
-        )}
+          )}
+        </tbody>
       </table>
     </div>
   )

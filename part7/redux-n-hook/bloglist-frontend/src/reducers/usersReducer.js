@@ -1,6 +1,6 @@
 import userService from '../services/users'
 
-const userReducer = (state = [], action) => {
+const usersReducer = (state = [], action) => {
   switch (action.type) {
     case 'GET_ALL':
       return action.users
@@ -19,4 +19,4 @@ export const getAllUsers = () => {
   }
 }
 
-export default userReducer
+export default usersReducer
