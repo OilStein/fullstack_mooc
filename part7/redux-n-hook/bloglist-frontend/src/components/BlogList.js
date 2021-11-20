@@ -1,39 +1,16 @@
 import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-import { createNotification } from '../reducers/notificationReducer'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
-
-import Blog from './Blog'
 import Togglable from './Togglable'
 import NewBlog from './NewBlog'
+import { Link } from 'react-router-dom'
 
 const BlogList = () => {
-  const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.login)
 
   const blogFormRef = React.createRef()
 
   const byLikes = (b1, b2) => b2.likes - b1.likes
-
-  const handleLike = async (blog) => {
-    try {
-      dispatch(likeBlog(blog))
-      dispatch(createNotification(`${blog.title} liked`))
-    } catch (error) {
-      dispatch(createNotification('Something went wrong with liking', 'error'))
-    }
-  }
-
-  const handleRemove = async (blog) => {
-    const id = blog.id
-    const blogToRemove = blogs.find(b => b.id === id)
-    const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
-    if (ok) {
-      await dispatch(removeBlog(id))
-    }
-  }
 
   return (
     <div>
@@ -42,16 +19,12 @@ const BlogList = () => {
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <NewBlog/>
       </Togglable>
+      <ul>
+        {blogs.sort(byLikes).map(blog =>
+        <li key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}</li>
+        )}
+      </ul>
 
-      {blogs.sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike}
-          handleRemove={handleRemove}
-          user={user}
-        />
-      )}
     </div>
 
   )

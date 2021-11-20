@@ -16,6 +16,7 @@ import { getAllUsers } from './reducers/usersReducer'
 
 const App = () => {
   const dispatch = useDispatch()
+  // Returns token, username and name
   const user = useSelector(state => state.login)
 
   useEffect(() => {
@@ -29,7 +30,7 @@ const App = () => {
       const pu = JSON.parse(logged)
       dispatch(setUserState(pu))
     }
-  }, [dispatch])
+  }, [])
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInUser')

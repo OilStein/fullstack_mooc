@@ -24,6 +24,7 @@ export const loginUser = (user) => {
     console.log('logged ' + logged.token)
     window.localStorage.setItem('loggedInUser', JSON.stringify(logged))
     blogs.setToken(logged.token)
+    console.log(logged)
     dispatch({
       user: logged,
       type: 'LOGIN'
