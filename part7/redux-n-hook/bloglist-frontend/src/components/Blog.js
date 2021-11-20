@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { createNotification } from '../reducers/notificationReducer'
-import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import { commentBlog, likeBlog, removeBlog } from '../reducers/blogReducer'
 import { useParams } from 'react-router'
 
 const Blog = () => {
@@ -11,8 +11,15 @@ const Blog = () => {
   const user = useSelector(state => state.login)
   const { id } = useParams()
   const blog = blogs.find(b => b.id === id)
+  if (!blog) {
+    return null
+  }
 
-  const handleLike = async (blog) => {
+  console.log(blog.comments)
+
+  const [comment, setComment] = useState('')
+
+  const handleLike = (blog) => {
     try {
       dispatch(likeBlog(blog))
       dispatch(createNotification(`${blog.title} liked`))
@@ -21,17 +28,23 @@ const Blog = () => {
     }
   }
 
-  const handleRemove = async (blog) => {
+  const handleRemove = (blog) => {
     const id = blog.id
     const blogToRemove = blogs.find(b => b.id === id)
     const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
     if (ok) {
-      await dispatch(removeBlog(id))
+      dispatch(removeBlog(id))
     }
   }
 
-  if (!blogs) {
-    return null
+  const handleComment = (e) => {
+    e.preventDefault()
+    try {
+      console.log(comment)
+      dispatch(commentBlog(blog.id, comment))
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -49,6 +62,21 @@ const Blog = () => {
           {blog.user.name === user.name ? <button id={blog.id} onClick={() => handleRemove(blog)}>remove</button> : <></>}
         </div>
 
+        <div>
+          <h3>Comments</h3>
+
+          <form onSubmit={handleComment}>
+            <input id='comment' value={comment} onChange={({ target }) => setComment(target.value) } placeholder='Write a comment..' ></input>
+            <button type='submit'>Comment</button>
+          </form>
+
+          <ul>
+            {blog.comments && blog.comments.map(comment =>
+              <li key={comment}>{comment}</li>
+            )}
+          </ul>
+
+        </div>
     </div>
   )
 }

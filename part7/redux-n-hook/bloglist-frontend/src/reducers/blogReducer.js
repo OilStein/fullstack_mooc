@@ -3,15 +3,17 @@ import blogService from '../services/blogs'
 const blogReducer = (state = [], action) => {
   switch (action.type) {
     case 'INIT':
-      return action.data.sort((a, b) => b.likes - a.likes)
+      return action.data
     case 'CREATE':
       return [...state, action.data]
     case 'UPDATE': {
-      const blog = action.data
-      return state.map(a => a.id === blog.id ? blog : a).sort((a, b) => b.likes - a.likes)
+      return action.data
     }
     case 'REMOVE': {
       return state.filter(s => s.id !== action.data.id)
+    }
+    case 'COMMENT': {
+      return action.data
     }
 
     default:
@@ -56,6 +58,16 @@ export const removeBlog = (id) => {
     dispatch({
       data: id,
       type: 'REMOVE'
+    })
+  }
+}
+
+export const commentBlog = (id, comment) => {
+  return async dispatch => {
+    const c = await blogService.comment(id, comment)
+    dispatch({
+      data: c,
+      type: 'COMMENT'
     })
   }
 }
