@@ -27,10 +27,9 @@ const NewBlog = () => {
 
   return (
     <div>
-      <h2>create new</h2>
       <form onSubmit={handleNewBlog}>
         <div>
-          author
+          <label>Author</label>
           <input
             id='author'
             value={author}

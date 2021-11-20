@@ -13,8 +13,8 @@ const BlogList = () => {
   const byLikes = (b1, b2) => b2.likes - b1.likes
 
   return (
-    <div>
-      <h2>blogs</h2>
+    <div className='container max-w-2xl'>
+      <h2 className='text-2xl font-bold' >Blogs</h2>
 
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <NewBlog/>

@@ -8,20 +8,21 @@ const Nav = () => {
 
   const user = useSelector(state => state.login)
 
-  const padding = {
-    padding: 5
-  }
-
   const handleLogout = () => {
     window.localStorage.removeItem('loggedInUser')
     dispatch(logoutUser())
   }
   return (
-    <div>
-      <Link style={padding} to="/">home</Link>
-      <Link style={padding} to="/users">users</Link>
-      <span style={padding}>{user.name} logged in <button onClick={handleLogout}>logout</button></span>
-    </div>
+    <nav className='p-4'>
+      <ul className="flex space-x-2">
+        <li><Link className='nav-item' to="/">home</Link></li>
+        <li><Link className='nav-item' to="/users">users</Link></li>
+        <li>
+          <span className='m-1' >{user.name} logged in
+          <button className='pl-2 pr-2 rounded-md bg-yellow-300' onClick={handleLogout}>logout</button></span></li>
+      </ul>
+
+      </nav>
   )
 }
 

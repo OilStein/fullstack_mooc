@@ -1,31 +1,8 @@
-div {
-  padding-top: 0.3em;
-}
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-.notification{
-  color: green;
-  background: lightgray;
-  font-size: 1.5em;
-  border-style: solid;
-  border-radius: 1rem;
-  padding: 1%;
-  margin-bottom: 1rem;
-}
-
-.error {
-  color: red;
-  background: lightgray;
-  font-size: 1.5em;
-  border-style: solid;
-  border-radius: 1rem;
-  padding: 1%;
-  margin-bottom: 1rem;
-}
-
-.blogStyle {
-  padding-top: 0.1em;
-  padding-left: 0.5em;
-  border: solid;
-  border-width: 0.1em;
-  margin-bottom: 0.1em;
+.nav-item {
+  @apply block px-4 rounded-md bg-yellow-400 text-yellow-700
 }
