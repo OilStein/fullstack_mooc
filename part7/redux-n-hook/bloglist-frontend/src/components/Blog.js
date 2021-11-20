@@ -9,17 +9,17 @@ const Blog = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.login)
-  const { id } = useParams()
-  const blog = blogs.find(b => b.id === id)
-  if (!blog) {
+
+  if (!blogs) {
     return null
   }
 
-  console.log(blog.comments)
+  const { id } = useParams()
 
+  const blog = blogs.find(b => b.id === id)
   const [comment, setComment] = useState('')
 
-  const handleLike = (blog) => {
+  const handleLike = async (blog) => {
     try {
       dispatch(likeBlog(blog))
       dispatch(createNotification(`${blog.title} liked`))
@@ -37,13 +37,13 @@ const Blog = () => {
     }
   }
 
-  const handleComment = (e) => {
+  const handleComment = async (e) => {
     e.preventDefault()
     try {
-      console.log(comment)
       dispatch(commentBlog(blog.id, comment))
+      setComment('')
     } catch (error) {
-      console.error(error)
+      dispatch(createNotification('Something went wrong with commenting', 'error'))
     }
   }
 
