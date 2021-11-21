@@ -28,31 +28,39 @@ const NewBlog = () => {
   return (
     <div>
       <form onSubmit={handleNewBlog}>
-        <div>
-          <label>Author</label>
+        <div className='mb-2'>
+          <label className='form-label'>Author</label>
           <input
+            type='text'
             id='author'
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
+            className='form-input'
           />
         </div>
-        <div>
-          title
+        <div className='mb-2'>
+          <label className='form-label'>Title</label>
           <input
+            type='text'
             id='title'
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            className='form-input'
           />
         </div>
-        <div>
-          url
+        <div className='mb-2'>
+          <label className='form-label'>Url</label>
           <input
+            type='text'
             id='url'
             value={url}
             onChange={({ target }) => setUrl(target.value)}
+            className='form-input'
           />
         </div>
-        <button id="create">create</button>
+        <button id="create" className='form-button'>
+          Create
+        </button>
       </form>
     </div>
   )

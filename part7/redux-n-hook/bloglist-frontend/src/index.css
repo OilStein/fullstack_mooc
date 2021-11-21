@@ -3,6 +3,29 @@
 @tailwind components;
 @tailwind utilities;
 
+.form-label {
+  @apply text-sm font-medium text-gray-900 block mb-2
+}
+
+.form-input {
+  @apply bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5
+}
+
+.form-button {
+  @apply text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center
+}
+
+.cancel-button {
+  @apply text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center
+}
+
+.open-button {
+  @apply text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center
+}
+
 .nav-item {
-  @apply block px-4 rounded-md bg-yellow-400 text-yellow-700
+  @apply bg-blue-700 md:bg-transparent text-white block pl-3 pr-4 py-2 md:text-blue-700 md:p-0 rounded
+}
+.nav-item2 {
+  @apply text-gray-700 text-lg hover:bg-gray-50 border-b border-gray-100 md:hover:bg-transparent md:border-0 block pl-3 pr-4 py-2 md:hover:text-blue-700 md:p-0
 }

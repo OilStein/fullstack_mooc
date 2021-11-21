@@ -1,6 +1,9 @@
 module.exports = {
   mode: 'jit',
-  purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
+  purge: [
+    './public/**/*.html',
+    './src/**/*.{js,jsx,ts,tsx,vue}'
+  ],
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {}
@@ -9,6 +12,8 @@ module.exports = {
     extend: {}
   },
   plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
     require('@tailwindcss/forms')
   ]
 }

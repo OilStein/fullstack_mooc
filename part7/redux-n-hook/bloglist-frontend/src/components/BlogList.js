@@ -13,17 +13,20 @@ const BlogList = () => {
   const byLikes = (b1, b2) => b2.likes - b1.likes
 
   return (
-    <div className='container max-w-2xl'>
-      <h2 className='text-2xl font-bold' >Blogs</h2>
-
+    <div className='container mx-auto'>
+      <h2 className='text-4xl font-bold' >Blogs</h2>
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
         <NewBlog/>
       </Togglable>
-      <ul>
+      <div className='flex flex-wrap flex-col gap-1 md:flex-row pt-4 mt-2'>
         {blogs.sort(byLikes).map(blog =>
-        <li key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}</li>
+        <Link key={blog.id} to={`/blogs/${blog.id}`}>
+          <div className='px-2 border-2 text-center rounded-md hover:bg-indigo-300'>
+            {blog.title}<i> by {blog.author} </i>
+          </div>
+        </Link>
         )}
-      </ul>
+      </div>
 
     </div>
 
