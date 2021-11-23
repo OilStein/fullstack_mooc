@@ -1,4 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { v1: uuid} = require('uuid')
 
 let authors = [
   {
@@ -102,16 +103,50 @@ const typeDefs = gql`
   type Query {
     bookCount: Int
     authorCount: Int
-    allBooks: [Book]
     allAuthors: [Author]
+    allBooks(author: String, genre: String): [Book]
+  }
+
+  type Mutation {
+    addBook(
+      title: String,
+      published: Int,
+      author: String,
+      id: ID,
+      genres: [String]
+    ): Book
+    editAuthor(
+      name: String,
+      setBornTo: Int
+    ): Author
   }
 `
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
+
     authorCount: () => authors.length,
-    allBooks: () => books,
+
+    allBooks: (root, args) => {
+      if (args.author && args.genre) {
+        const list = books.filter(b => b.author === args.author)
+                          .filter(b => b.genres.find(g => g === args.genre))
+        return list
+      }
+      if (args.author) {
+        const list = books.filter(b => b.author === args.author)
+        return list
+      }
+      if (args.genre) {
+        const list = books.filter(b => b.genres.find(g => g === args.genre))
+        return list
+      }
+
+      return books
+      
+    },
+
     allAuthors: () => {
       const a = authors.map(a => ({...a, bookCount: () => {
         const f = books.filter(b => b.author === a.name)
@@ -119,11 +154,36 @@ const resolvers = {
       }
         
       }))
-      console.log(a);
       return a
     }
-    
+  },
+
+  Mutation: {
+    addBook: (root, args) => {
+      // console.log(args.author)
+      const book = {...args, id: uuid() }
+      books = books.concat(book)
+      
+      if (!authors.includes(args.author)) {
+        const author = {name: args.author, id: uuid()}
+        authors = authors.concat(author)
+      }
+
+      return book
+    },
+    editAuthor: (root,args) => {
+      //console.log(args)
+      const editable = authors.find(a => a.name === args.name)
+      //console.log(editable);
+      if (editable === null) {
+        return null
+      }
+      const edit = {...editable, born: args.setBornTo}
+      console.log(edit);
+      return edit
+    }
   }
+
 }
 
 const server = new ApolloServer({
