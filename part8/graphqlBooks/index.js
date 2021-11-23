@@ -109,15 +109,15 @@ const typeDefs = gql`
 
   type Mutation {
     addBook(
-      title: String,
-      published: Int,
-      author: String,
+      title: String!,
+      published: Int!,
+      author: String!,
       id: ID,
       genres: [String]
     ): Book
     editAuthor(
-      name: String,
-      setBornTo: Int
+      name: String!,
+      setBornTo: Int!
     ): Author
   }
 `
@@ -179,6 +179,7 @@ const resolvers = {
         return null
       }
       const edit = {...editable, born: args.setBornTo}
+      authors = authors.filter(a => a.name !== args.name).concat(edit)
       console.log(edit);
       return edit
     }
