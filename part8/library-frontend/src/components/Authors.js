@@ -9,8 +9,6 @@ const Authors = ({show}) => {
   if(authors.loading) return <div>Loading</div>
   if(authors.error) return <div>Error :(</div>
 
-  
-
   return (
     <div>
       <h2>authors</h2>
