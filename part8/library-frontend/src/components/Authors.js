@@ -4,7 +4,6 @@ import { ALL_AUTHORS} from '../queries';
 
 const Authors = ({show}) => {
   const authors = useQuery(ALL_AUTHORS)
-  console.log(authors.data);
 
   if (!show)  return null
   if(authors.loading) return <div>Loading</div>
