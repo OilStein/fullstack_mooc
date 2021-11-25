@@ -56,7 +56,11 @@ const Authors = ({show}) => {
       <form onSubmit={submit}>
         <div>
           name:
-          <input value={name} onChange={({target}) => setName(target.value)}></input>
+          <select value={name} onChange={({target}) => setName(target.value)}>
+            {authors.data.allAuthors.map(author => {
+              return <option key={author.id} value={author.name}>{author.name}</option>
+            })}
+          </select>
         </div>
         <div>
           birthdate: 
