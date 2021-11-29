@@ -6,6 +6,8 @@ import { ALL_BOOKS} from '../queries';
 const Books = ({show}) => {
   const books = useQuery(ALL_BOOKS)
 
+  // console.log(books.data);
+
   if (!show) return null
   if(books.loading) return <div>Loading</div>
   if(books.error) return <div>Error :(</div>
@@ -28,7 +30,7 @@ const Books = ({show}) => {
           {books.data.allBooks.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
-              <td>{a.author}</td>
+              <td>{a.author.name}</td>
               <td>{a.published}</td>
             </tr>
           )}

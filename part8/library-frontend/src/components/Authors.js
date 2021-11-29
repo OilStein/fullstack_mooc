@@ -14,6 +14,7 @@ const Authors = ({show}) => {
   const submit = async (event) => {
     event.preventDefault()
     try {
+      //console.log(name);
       await editAuthor({variables: {name, year: parseInt(year)}})
     } catch (error) {
       console.error(error);
@@ -26,12 +27,12 @@ const Authors = ({show}) => {
   if (!show)  return null
   if(authors.loading) return <div>Loading</div>
   if(authors.error) return <div>Error :(</div>
-
+    
   return (
     <div>
       <h2>authors</h2>
       <table>
-        <tbody>
+        <thead>
           <tr>
             <th></th>
             <th>
@@ -41,6 +42,8 @@ const Authors = ({show}) => {
               books
             </th>
           </tr>
+        </thead>
+        <tbody>    
           {authors.data.allAuthors.map(a =>
             <tr key={a.name}>
               <td>{a.name}</td>
@@ -58,7 +61,7 @@ const Authors = ({show}) => {
           name:
           <select value={name} onChange={({target}) => setName(target.value)}>
             {authors.data.allAuthors.map(author => {
-              return <option key={author.id} value={author.name}>{author.name}</option>
+              return <option key={author.name} value={author.name}>{author.name}</option>
             })}
           </select>
         </div>
