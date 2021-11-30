@@ -5,7 +5,8 @@ const schema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    minlength: 3
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
