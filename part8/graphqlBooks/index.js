@@ -1,9 +1,15 @@
 require('dotenv').config()
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, AuthenticationError, UserInputError } = require('apollo-server')
 const mongoose = require('mongoose')
 
 const Author = require('./models/author')
 const Book = require('./models/book')
+const User = require('./models/user')
+
+const jwt = require('jsonwebtoken')
+
+// salainen
+const JWT_SECRET = process.env.SECRET
 
 const url = process.env.MONGODB_URI
 
@@ -92,6 +98,10 @@ const resolvers = {
 
     allAuthors: async () => {
       return await Author.find({})
+    },
+
+    me: (root, args, context) => {
+      context.currentUser
     }
   },
 
@@ -112,7 +122,11 @@ const resolvers = {
   },
 
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      if(!context.currentUser) {
+        throw new AuthenticationError('Please log in!')
+      }
+
       let author = await Author.findOne({name: args.author})
 
       if(!author) {
@@ -122,7 +136,7 @@ const resolvers = {
       }
 
       const book = new Book({...args, author: author})
-      console.log(book);
+      // console.log(book);
       try {
         return book.save()
       } catch (error) {
@@ -132,11 +146,32 @@ const resolvers = {
       }
     },
     editAuthor: async (root,args) => {
-      console.log(args);
+      // console.log(args);
+
+      if(!context.currentUser) {
+        throw new AuthenticationError('Please log in!')
+      }
       const edit = await Author.findOneAndUpdate({name: args.name}, {$set: {born: args.setBornTo}})
-      console.log(edit);
+      // console.log(edit);
       return edit ? edit : null
+    },
+
+    createUser: async (root, args) => {
+      const user = new User({username: args.username, favoriteGenre: args.favoriteGenre})
+      try {
+        await user.save()
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invadidArgs: args
+        })
+      }
+
+    },
+
+    login: async (root, args) => {
+      const user = await User.findOne({username: args.username})
     }
+
   }
 
 }
@@ -144,6 +179,15 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({req}) => {
+    const auth = req ? req.headers.authorization : null
+    if( auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decoded = jwt.verify(
+        auth.substring(7), JWT_SECRET
+      )
+      const currentUser = await User.findById(decoded.id).populate('friends')
+    }
+  }
 })
 
 server.listen().then(({ url }) => {
