@@ -159,7 +159,7 @@ const resolvers = {
     createUser: async (root, args) => {
       const user = new User({username: args.username, favoriteGenre: args.favoriteGenre})
       try {
-        await user.save()
+        return await user.save()
       } catch (error) {
         throw new UserInputError(error.message, {
           invadidArgs: args
@@ -170,6 +170,16 @@ const resolvers = {
 
     login: async (root, args) => {
       const user = await User.findOne({username: args.username})
+      if (!user || args.password !== 'salainen') {
+        throw new UserInputError('wrong credentials')
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id
+      }
+
+      return { value: jwt.sign(userForToken, `${JWT_SECRET}`) }
     }
 
   }
