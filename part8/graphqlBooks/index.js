@@ -123,7 +123,8 @@ const resolvers = {
 
   Mutation: {
     addBook: async (root, args, context) => {
-      if(!context.currentUser) {
+      const currentUser = context.currentUser
+      if(!currentUser) {
         throw new AuthenticationError('Please log in!')
       }
 
@@ -145,10 +146,9 @@ const resolvers = {
         })
       }
     },
-    editAuthor: async (root,args) => {
-      // console.log(args);
-
-      if(!context.currentUser) {
+    editAuthor: async (root,args, context) => {
+      const currentUser = context.currentUser
+      if(!currentUser) {
         throw new AuthenticationError('Please log in!')
       }
       const edit = await Author.findOneAndUpdate({name: args.name}, {$set: {born: args.setBornTo}})
@@ -170,7 +170,7 @@ const resolvers = {
 
     login: async (root, args) => {
       const user = await User.findOne({username: args.username})
-      if (!user || args.password !== 'salainen') {
+      if (!user || args.password !== 'test') {
         throw new UserInputError('wrong credentials')
       }
 
@@ -195,7 +195,8 @@ const server = new ApolloServer({
       const decoded = jwt.verify(
         auth.substring(7), JWT_SECRET
       )
-      const currentUser = await User.findById(decoded.id).populate('friends')
+      const currentUser = await User.findById(decoded.id)
+      return {currentUser}
     }
   }
 })

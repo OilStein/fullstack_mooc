@@ -2,22 +2,24 @@ import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client';
 import { ALL_AUTHORS, EDIT_AUTHOR} from '../queries';
 
-const Authors = ({show}) => {
+const Authors = ({show, token}) => {
   const authors = useQuery(ALL_AUTHORS)
   const [name, setName] = useState('')
   const [year, setYear] = useState('')
 
   const [editAuthor] = useMutation(EDIT_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS}]
+    refetchQueries: [{ query: ALL_AUTHORS}],
+    onError: (error) => {
+      console.error(error.graphQLErrors);
+    }
   })
 
   const submit = async (event) => {
     event.preventDefault()
     try {
-      //console.log(name);
       await editAuthor({variables: {name, year: parseInt(year)}})
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
 
     setName('')
@@ -26,7 +28,10 @@ const Authors = ({show}) => {
 
   if (!show)  return null
   if(authors.loading) return <div>Loading</div>
-  if(authors.error) return <div>Error :(</div>
+  if(authors.error) {
+    localStorage.clear()
+    return <div>Error :(</div>
+  } 
     
   return (
     <div>
@@ -54,6 +59,8 @@ const Authors = ({show}) => {
         </tbody>
       </table>
 
+      {token
+      ?
       <div>
          <h3>Set birthyear</h3>
       <form onSubmit={submit}>
@@ -72,7 +79,7 @@ const Authors = ({show}) => {
         <button type='submit' >update author</button>
       </form>
       </div>
-     
+      : null}
 
     </div>
   )

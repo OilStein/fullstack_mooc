@@ -5,18 +5,20 @@ import { ALL_BOOKS} from '../queries';
 
 const Books = ({show}) => {
   const [search, setSearch] = useState("")
-  const data = useQuery(ALL_BOOKS, {
-    variables: {genre: search}
-  })
-  // TODO get all genres
+  const data = useQuery(ALL_BOOKS)
+
 
   if (!show) return null
   if(data.loading) return <div>Loading</div>
   if(data.error) return <div>Error :(</div>
   
-  const books = data.data.allBooks
+  let books = data.data.allBooks
 
-  const genres = [...new Set(books.map(b => b.genres).flat())]  
+  const genres = [...new Set(books.map(b => b.genres).flat())]
+
+  if(search !== "") {
+    books = books.filter(book => book.genres.includes(search))
+  }
 
   return (
     <div>
@@ -38,7 +40,7 @@ const Books = ({show}) => {
       <table>
         <tbody>
           <tr>
-            <th></th>
+            <th>name</th>
             <th>
               author
             </th>
