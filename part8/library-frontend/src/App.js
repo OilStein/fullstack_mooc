@@ -41,7 +41,7 @@ const App = () => {
           <Login setError={notify} setToken={setToken}/>
         </div>
         :<div>
-          <button onClick={logout}/>
+          <button onClick={logout}>Logout</button>
         </div>
       }
 
