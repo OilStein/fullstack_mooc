@@ -23,7 +23,7 @@ function App() {
 
   const countryHook = () => {
     console.log("effect country hook");
-    axios.get("https://restcountries.eu/rest/v2/all").then((response) => {
+    axios.get("https://restcountries.com/v2/all").then((response) => {
       console.log("fulfilled");
       setCountries(response.data);
     });
