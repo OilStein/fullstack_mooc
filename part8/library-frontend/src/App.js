@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useApolloClient, useQuery } from '@apollo/client'
+import { useApolloClient, useQuery, useSubscription } from '@apollo/client'
 
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -7,22 +7,44 @@ import NewBook from './components/NewBook'
 import Notify from './components/Notify'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
-import { USER, ALL_BOOKS, ALL_AUTHORS } from './queries'
+import { USER, ALL_BOOKS, ALL_AUTHORS, BOOK_ADDED } from './queries'
 
 
 const App = () => {
   const [page, setPage] = useState('authors')
   const [errorMessage, setErrorMessage] = useState(null)
   const [token, setToken] = useState(null)
+
+  // Apollo queries
   const user = useQuery(USER, {pollInterval: 1000})
-
-  const client = useApolloClient()
-
-  
-  console.log(user.data);
-
   const books = useQuery(ALL_BOOKS)
   const authors = useQuery(ALL_AUTHORS)
+  const client = useApolloClient()
+
+  const checkDB = (set, item) => {
+    return set.map(o => o.id).includes(item.id)
+  }
+
+  const updateCache = (book) => {
+    const cache = client.readQuery({ query: ALL_BOOKS })
+    if(!checkDB(cache.allBooks, book)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks: cache.allBooks.concat(book)}
+      })
+    }
+  }
+  
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData);
+      const book = subscriptionData.data.bookAdded
+      notify(`new book has been added: ${book.title}`)
+      updateCache(book)
+    }
+
+  })
+
 
   const notify = (message) => {
     setErrorMessage(message)
