@@ -1,12 +1,8 @@
 
 import React, { useState } from 'react'
-import { useQuery } from '@apollo/client';
-import { ALL_BOOKS} from '../queries';
 
-const Books = ({show}) => {
+const Books = ({show, data}) => {
   const [search, setSearch] = useState("")
-  const data = useQuery(ALL_BOOKS)
-
 
   if (!show) return null
   if(data.loading) return <div>Loading</div>

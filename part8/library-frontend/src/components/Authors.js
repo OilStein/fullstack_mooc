@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation} from '@apollo/client';
 import { ALL_AUTHORS, EDIT_AUTHOR} from '../queries';
 
-const Authors = ({show, token}) => {
-  const authors = useQuery(ALL_AUTHORS)
+const Authors = ({show, token, authors}) => {
   const [name, setName] = useState('')
   const [year, setYear] = useState('')
 

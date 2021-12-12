@@ -1,12 +1,13 @@
 import { useMutation } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
-import { LOGIN } from '../queries'
+import { LOGIN, USER } from '../queries'
 
 const Login = ({setError, setToken}) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const [login, result] = useMutation(LOGIN, {
+    refetchQueries: [{query: USER}],
     onError: (error) => {
       setError(error.message)
     }
@@ -22,7 +23,7 @@ const Login = ({setError, setToken}) => {
 
   const submit = async (e) => {
     e.preventDefault()
-    await login({variables: {username, password}})
+    login({variables: {username, password}})
 
   }
 

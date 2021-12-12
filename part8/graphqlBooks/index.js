@@ -101,7 +101,7 @@ const resolvers = {
     },
 
     me: (root, args, context) => {
-      context.currentUser
+      return context.currentUser
     }
   },
 
