@@ -1,15 +1,13 @@
 import React from "react";
 
-interface Parts {
-  name: string,
-  exerciseCount: number
-}
+import { CoursePart } from "../types";
+import Part from "./Part";
 
-const Content = ({courseParts}:{courseParts:Parts[]}):JSX.Element => {
+const Content = ({courseParts}:{courseParts:CoursePart[]}):JSX.Element => {
   return (
     <div>
-      {courseParts.map(course => {
-        return <p key={course.name}>{course.name} {course.exerciseCount}</p>
+      {courseParts.map(course=> {
+        return <Part part={course} key={course.name}></Part>
       })}
     </div>
   )
