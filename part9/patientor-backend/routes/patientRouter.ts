@@ -5,7 +5,7 @@ import toNewPatient from '../utils/utlis';
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  res.send(patientService.getPatients());
+  res.send(patientService.getPatientsWOssn());
 });
 
 router.post('/', (req, res) => {
@@ -19,6 +19,17 @@ router.post('/', (req, res) => {
       errorMessage += ' Error: ' + error.message;
     }
     res.status(400).send(errorMessage);
+  }
+})
+
+router.get('/:id', (req, res) => {
+  const id = req.params.id
+  const patient = patientService.getPatient(id)
+  if (patient) {
+    res.send(patient)
+  }
+  else {
+    res.sendStatus(404)
   }
 })
 

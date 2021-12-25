@@ -1,19 +1,26 @@
 
 export interface Diagnose {
   code: string
-  name: string,
+  name: string
   latin?: string
 }
 
-export interface Patient {
-  id: string,
-  name: string,
-  dateOfBirth: string,
-  ssn: string,
-  gender: string,
-  occupation: string
+export interface Entry {
+
 }
 
-export type HiddenSSN = Omit<Patient, "ssn">
+export interface Patient {
+  id: string
+  name: string
+  dateOfBirth: string
+  ssn: string
+  gender: string
+  occupation: string
+  entries: Entry[]
+}
 
-export type NewPatient = Omit<Patient, "id">
+export type PublicPatient = Omit<Patient, "ssn" | "entries">
+
+export type HiddenSSN = Omit<Patient, "ssn" | "entries">
+
+export type NewPatient = Omit<Patient, "id" | "entries">

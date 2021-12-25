@@ -6,7 +6,7 @@ enum Gender {
   Other = "other"
 }
 
-type Fields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown}
+type Fields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown, entries: unknown}
 
 const toNewPatient = (object: Fields):NewPatient => {
   const newPatient: NewPatient = {
@@ -67,6 +67,5 @@ const parseGender = (gender: unknown): Gender => {
   }
   return gender
 }
-
 
 export default toNewPatient

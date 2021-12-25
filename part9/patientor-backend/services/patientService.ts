@@ -2,9 +2,11 @@ import patients from '../data/patients.json'
 
 import { HiddenSSN, Patient, NewPatient } from '../types'
 
+import data from '../data/patients.json'
+
 import {v1 as uuid} from 'uuid'
 
-const getPatients = ():HiddenSSN[] => {
+const getPatientsWOssn = (): HiddenSSN[]  => {
   return patients.map(({id, name, dateOfBirth, gender, occupation}) => ({
     id,
     name,
@@ -14,10 +16,20 @@ const getPatients = ():HiddenSSN[] => {
   }))
 }
 
+const getPatients = ():Array<Patient> => {
+  return data
+}
+
+const getPatient = (id: string):Patient | undefined => {
+  const patient =  data.find(p => p.id === id)
+  return patient
+}
+
 const addPatient = (entry: NewPatient):Patient => {
     const newPatient = {
       id: uuid(),
-      ...entry
+      ...entry,
+      entries: []
     }
     patients.push(newPatient)
     return newPatient
@@ -25,6 +37,8 @@ const addPatient = (entry: NewPatient):Patient => {
 
 
 export default {
+  getPatientsWOssn,
   getPatients,
-  addPatient
+  addPatient,
+  getPatient
 }
