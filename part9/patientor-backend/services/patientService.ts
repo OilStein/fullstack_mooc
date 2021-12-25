@@ -1,8 +1,8 @@
-import patients from '../data/patients.json'
+import patients from '../data/patients'
 
 import { HiddenSSN, Patient, NewPatient } from '../types'
 
-import data from '../data/patients.json'
+import data from '../data/patients'
 
 import {v1 as uuid} from 'uuid'
 
