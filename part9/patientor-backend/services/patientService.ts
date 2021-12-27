@@ -1,6 +1,6 @@
 import patients from '../data/patients'
 
-import { HiddenSSN, Patient, NewPatient } from '../types'
+import { HiddenSSN, Patient, NewPatient, Entry } from '../types'
 
 import data from '../data/patients'
 
@@ -35,10 +35,20 @@ const addPatient = (entry: NewPatient):Patient => {
     return newPatient
 }
 
+const addNewEntry = (id: string, data: Entry): Patient | undefined => {
+  const patient = getPatient(id)
+  if (!patient) {
+    throw new Error('patient not found');
+  }
+  patient.entries.push(data);
+  return patient;
+}
+
 
 export default {
   getPatientsWOssn,
   getPatients,
   addPatient,
-  getPatient
+  getPatient,
+  addNewEntry
 }

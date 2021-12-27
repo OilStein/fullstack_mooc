@@ -1,4 +1,4 @@
-import { NewPatient} from "../types";
+import { BaseEntry, Entry, HealthCheckRating, NewPatient} from "../types";
 
 enum Gender {
   Male = "male",
@@ -8,7 +8,7 @@ enum Gender {
 
 type Fields = {name: unknown, dateOfBirth: unknown, ssn: unknown, gender: unknown, occupation: unknown, entries: unknown}
 
-const toNewPatient = (object: Fields):NewPatient => {
+export const toNewPatient = (object: Fields):NewPatient => {
   const newPatient: NewPatient = {
     name: parseName(object.name),
     dateOfBirth: parseDate(object.dateOfBirth),
@@ -17,6 +17,56 @@ const toNewPatient = (object: Fields):NewPatient => {
     occupation: parseOccupation(object.occupation)
   }
   return newPatient
+}
+
+const isType = (param: string): param is 'HealthCheck' | 'Hospital' | 'OccupationalHealthcare' => {
+  return ['HealthCheck', 'Hospital', 'OccupationalHealthcare'].includes(param);
+};
+
+export const toNewEntry = (object:any): Entry => {
+
+  const type = object.type
+
+  if (!object || !isType(type)) {
+    throw new Error('No object or invalid object type!');
+  }
+
+  const entry: BaseEntry = {
+    id: parseString(object.id),
+    description: parseString(object.description),
+    date: parseDate(object.date),
+    specialist: parseString(object.specialist),
+  };
+
+  switch (type) {
+    case 'HealthCheck':
+        return {
+            ...entry,
+            type: 'HealthCheck',
+            healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+        };
+    case 'OccupationalHealthcare':
+        return {
+            ...entry,
+            type: 'OccupationalHealthcare',
+            employerName: parseString(object.employerName),
+            sickLeave: {
+                startDate: parseDate(object.sickLeave.startDate),
+                endDate: parseDate(object.sickLeave.endDate)
+            }
+        };
+    case 'Hospital':
+        return {
+            ...entry,
+            type: 'Hospital',
+            discharge: {
+                date: parseDate(object.discharge.date),
+                criteria: parseString(object.discharge.criteria)
+            }
+        };
+    default:
+        return assertNever(type);
+  }
 }
 
 const isString = (text: unknown): text is string => {
@@ -68,4 +118,29 @@ const parseGender = (gender: unknown): Gender => {
   return gender
 }
 
-export default toNewPatient
+const parseString = (str: unknown): string => {
+  if (!str || !isString(str)) {
+      throw new Error('Incorrect or missing something ' + str);
+  }
+  return str;
+};
+
+const assertNever = (value: never): never => {
+  throw new Error(`Unhandled discriminated union member: ${JSON.stringify(value)}`);
+};
+
+const isHealthRating = (param: any): param is HealthCheckRating => {
+  return Object.values(HealthCheckRating).includes(param);
+};
+
+const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
+  if (!rating || !isHealthRating(rating)) {
+      throw new Error('Incorrect or missing health check rating' + rating);
+  }
+  return rating;
+};
+
+export default {
+  toNewPatient,
+  toNewEntry
+}
